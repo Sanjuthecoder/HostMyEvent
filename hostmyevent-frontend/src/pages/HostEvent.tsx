@@ -12,6 +12,71 @@ export default function HostEvent() {
     const [submitSuccess, setSubmitSuccess] = useState(false);
     const [currentStep, setCurrentStep] = useState(1);
 
+    // Media State
+    const [mediaFiles, setMediaFiles] = useState<{ url: string, type: 'image' | 'video', file: File }[]>([]);
+
+    // Form State
+    const [formData, setFormData] = useState({
+        title: '',
+        category: '',
+        description: '',
+        date: '',
+        startTime: '',
+        endTime: '',
+        venueName: '',
+        address: '',
+        locationCity: '',
+        ticketType: 'FREE',
+        ticketPrice: '',
+        maxAttendees: '',
+        organizerEmail: user?.email || '',
+        organizerPhone: ''
+    });
+
+    const categories = [
+        "Cricket", "Football", "Volleyball", "Handball", "Badminton", "Kabaddi", "Wrestling",
+        "Cycle Racing", "Marathon", "Study Group", "Tech Meetup", "Music Concert", "Workshop"
+    ];
+
+    // Auth Guard
+    useEffect(() => {
+        if (!isAuthenticated) {
+            navigate('/login?redirect=host');
+        }
+    }, [isAuthenticated, navigate]);
+
+    // Keep organizerEmail in sync with the logged-in user's email
+    useEffect(() => {
+        if (user?.email) {
+            setFormData(prev => ({ ...prev, organizerEmail: user.email }));
+        }
+    }, [user]);
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files) {
+            const filesArray = Array.from(e.target.files);
+            const newMedia = filesArray.map(file => ({
+                url: URL.createObjectURL(file),
+                type: file.type.startsWith('video/') ? 'video' as const : 'image' as const,
+                file
+            }));
+            setMediaFiles(prev => [...prev, ...newMedia]);
+        }
+    };
+
+    const removeMedia = (index: number) => {
+        setMediaFiles(prev => {
+            const newMedia = [...prev];
+            URL.revokeObjectURL(newMedia[index].url);
+            newMedia.splice(index, 1);
+            return newMedia;
+        });
+    };
+
     const validateForm = () => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         const phoneRegex = /^\d{10}$/;
