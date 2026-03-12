@@ -1,0 +1,25 @@
+# Root .gitignore for HostMyEvent
+
+# Project specific
+DEPLOYMENT.md
+*.log
+
+# Backend
+hostmyevent-backend/.env
+hostmyevent-backend/target/
+hostmyevent-backend/.mvn/
+hostmyevent-backend/*.log
+
+# Frontend
+hostmyevent-frontend/.env
+hostmyevent-frontend/node_modules/
+hostmyevent-frontend/dist/
+hostmyevent-frontend/*.log
+hostmyevent-frontend/*.local
+
+# IDEs and OS
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
